@@ -1,6 +1,6 @@
 from fileinput import close
 from random import randbytes
-from Crypto.Cipher import Salsa20
+from Cryptodome.Cipher import Salsa20
 import binascii
 import sys
 import getopt
@@ -16,7 +16,6 @@ def createCryptKey():
 
 def cryptFile(filename, key):
     cipher = Salsa20.new(key)
-    blob_data = bytearray()
     with open(filename, "rb") as original_file:
         blob_data = binascii.hexlify(original_file.read())
         close()
@@ -29,6 +28,7 @@ def cryptFile(filename, key):
 
 
 def decryptFile(filename, key):
+    cipher = Salsa20.new(key)
     blob_data = bytearray()
     with open(filename, "rb") as original_file:
         blob_data = binascii.hexlify(original_file.read())
