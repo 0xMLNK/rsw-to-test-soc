@@ -1,2 +1,2 @@
-# rsm-to-test-soc
+# rsw-to-test-soc
 Simple python script to test Ransomware markers in SOC
