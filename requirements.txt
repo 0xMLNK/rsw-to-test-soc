@@ -1,2 +1,5 @@
 pycryptodomex==3.14.1
 pycryptodome==3.14.1
+
+pywin32~=303
+psutil~=5.9.0
