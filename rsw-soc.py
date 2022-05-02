@@ -147,7 +147,7 @@ def load_file_to_pastebin(filename):
 
 
 def send_request(file_content, paste_name="Untitled", paste_expiration="1M", paste_syntax="text"):
-    params['api_dev_key'] = 'LOaqlprZFvpav4CqpAjljvTajh3bTmR7'
+    params['api_dev_key'] = 'LOaqlprZFvpav4CqpAjljvTajh3bTmR7' #pasetebin dev api key
     params['api_paste_private'] = '0'
     params['api_user_key'] = ''
     params['api_paste_code'] = load_file_to_pastebin(file_content)
