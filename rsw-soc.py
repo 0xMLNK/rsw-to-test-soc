@@ -172,7 +172,7 @@ def main(argv):
     encrypt_files_in_path(argv)
     print("TEST_2: Read process memory from {}".format(path_to_programm))
     os.startfile(path_to_programm)
-    time.sleep(1)
+    time.sleep(2)
     read_process_memory_test()
     url = send_request('./decrypt_data.csv', 'rsw-soc-test', '1H', 'text')
     print("Decrypt info was send to server.\n"
